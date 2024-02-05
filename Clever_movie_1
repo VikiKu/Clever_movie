@@ -1,0 +1,119 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": []
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Сначала создаю телеграм - бота:"
+      ],
+      "metadata": {
+        "id": "KMYcVnlcIiex"
+      }
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 47,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "_qW1CbbOIXfm",
+        "outputId": "e1ea323b-d107-4004-d522-c1da05ace8a1"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Requirement already satisfied: pyTelegramBotAPI in /usr/local/lib/python3.10/dist-packages (4.15.4)\n",
+            "Requirement already satisfied: requests in /usr/local/lib/python3.10/dist-packages (from pyTelegramBotAPI) (2.31.0)\n",
+            "Requirement already satisfied: charset-normalizer<4,>=2 in /usr/local/lib/python3.10/dist-packages (from requests->pyTelegramBotAPI) (3.3.2)\n",
+            "Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.10/dist-packages (from requests->pyTelegramBotAPI) (3.6)\n",
+            "Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.10/dist-packages (from requests->pyTelegramBotAPI) (2.0.7)\n",
+            "Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.10/dist-packages (from requests->pyTelegramBotAPI) (2023.11.17)\n"
+          ]
+        }
+      ],
+      "source": [
+        "pip install pyTelegramBotAPI #устанавливаю библиотеку"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import telebot\n",
+        "botTimeWeb = telebot.TeleBot('6767214855:AAHGuoOnbmlpC5FRpGq6AY-pkbQJxmFDXSI')#здесь уникальный токен бота\n",
+        "from telebot import types"
+      ],
+      "metadata": {
+        "id": "JBTzwSuGLS52"
+      },
+      "execution_count": 48,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#обработчик сообщений\n",
+        "@botTimeWeb.message_handler(commands=['start'])\n",
+        "def startBot(message):\n",
+        "  first_mess = f\"<b>{message.from_user.first_name} {message.from_user.last_name}</b>, привет!\\nХочешь я помогу тебе выбрать фильм для просмотра?\"\n",
+        "  #создание кнопки типа inline(отображается под сообщением), переправляет пользователя на следующее сообщение\n",
+        "  markup = types.InlineKeyboardMarkup()\n",
+        "  button_yes = types.InlineKeyboardButton(text = 'Да', callback_data = 'yes')\n",
+        "  markup.add(button_yes)\n",
+        "\n",
+        "  botTimeWeb.send_message(message.chat.id, first_mess, parse_mode='html', reply_markup=markup)"
+      ],
+      "metadata": {
+        "id": "N7jLDelwLza3"
+      },
+      "execution_count": 49,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#функционал кнопки \"Да\"\n",
+        "@botTimeWeb.callback_query_handler(func=lambda call:True)\n",
+        "def response(function_call):\n",
+        "  if function_call.message:\n",
+        "     if function_call.data == \"yes\":\n",
+        "        second_mess = \"Напиши мне в ответном сообщении, какое у тебя настроение и чего ты ожидаешь от просмотра))\"\n",
+        "        botTimeWeb.send_message(function_call.message.chat.id, second_mess)\n",
+        "        #обработка запроса закончена\n",
+        "        botTimeWeb.answer_callback_query(function_call.id)"
+      ],
+      "metadata": {
+        "id": "TMnY8hMeS1NM"
+      },
+      "execution_count": 50,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#непрерывная работа бота\n",
+        "botTimeWeb.infinity_polling()"
+      ],
+      "metadata": {
+        "id": "51vSoU6-Ug23"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
